@@ -1,6 +1,8 @@
 // see: https://en.wikipedia.org/wiki/List_of_country_calling_codes
 // for list of country/calling codes
 
+import 'package:collection/collection.dart';
+
 const List<Country> countries = [
   Country(
     name: "Afghanistan",
@@ -2014,7 +2016,7 @@ class Country {
     return dialCode;
   }
 
-  static Country getCountryByCC(String iso) {
-    return countries.firstWhere((country) => country.code == iso);
+  static Country? getCountryByCC(String iso) {
+    return countries.firstWhereOrNull((country) => country.code == iso);
   }
 }

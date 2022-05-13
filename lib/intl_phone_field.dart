@@ -33,8 +33,7 @@ class IntlPhoneField extends StatefulWidget {
   final ValueChanged<Country>? onCountryChanged;
 
   /// For validator to work, turn [autoValidateMode] to [AutoValidateMode.onUserInteraction]
-  final FutureOr<String?> Function(String?)? validator;
-  final FutureOr<String?> Function(PhoneNumber?)? aValidator;
+  final FormFieldValidator<String?>? validator;
 
   @Deprecated('use autovalidateMode instead as it offers more options')
   final bool autovalidate;
@@ -221,7 +220,6 @@ class IntlPhoneField extends StatefulWidget {
     this.dropdownTextStyle,
     this.onSubmitted,
     this.validator,
-    this.aValidator,
     this.onChanged,
     this.countries,
     this.onCountryChanged,
@@ -301,7 +299,7 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
         number: widget.initialValue ?? '',
       );
 
-      final value = widget.aValidator?.call(initialPhoneNumber);
+      final value = widget.validator?.call(initialPhoneNumber.number);
       if (value is String) {
         validatorMessage = value;
       } else {
@@ -374,21 +372,12 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
         );
 
         if (widget.autovalidateMode != AutovalidateMode.disabled) {
-          validatorMessage = await widget.aValidator?.call(phoneNumber);
+          validatorMessage = widget.validator?.call(phoneNumber.number);
         }
 
         widget.onChanged?.call(phoneNumber);
       },
-      validator: (value) {
-        if (!widget.disableLengthCheck && value != null) {
-          return value.length >= _selectedCountry.minLength &&
-                  value.length <= _selectedCountry.maxLength
-              ? null
-              : widget.invalidNumberMessage;
-        }
-
-        return validatorMessage;
-      },
+      validator: widget.validator, // pass in our own validator with translations
       maxLength: widget.disableLengthCheck ? null : _selectedCountry.maxLength,
       keyboardType: widget.keyboardType,
       inputFormatters: widget.inputFormatters,
