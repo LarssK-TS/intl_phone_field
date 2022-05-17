@@ -1,3 +1,5 @@
+import 'package:collection/collection.dart';
+
 import 'countries.dart';
 
 class NumberTooLongException implements Exception {}
@@ -71,10 +73,12 @@ class PhoneNumber {
     }
 
     if (phoneNumber.startsWith('+')) {
-      return countries.firstWhere(
-          (country) => phoneNumber.substring(1).startsWith(country.dialCode + country.regionCode));
+      return countries.firstWhereOrNull((country) =>
+              phoneNumber.substring(1).startsWith(country.dialCode + country.regionCode)) ??
+          getCountry('');
     }
-    return countries
-        .firstWhere((country) => phoneNumber.startsWith(country.dialCode + country.regionCode));
+    return countries.firstWhereOrNull(
+            (country) => phoneNumber.startsWith(country.dialCode + country.regionCode)) ??
+        getCountry('');
   }
 }
